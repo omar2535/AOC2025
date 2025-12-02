@@ -8,18 +8,19 @@ fn main() {
 pub fn partone() {
     let mut dial: i32 = 50;
     let mut password: i32 = 0;
-    let data = fs::read_to_string("./data/day1_example.txt").expect("Unable to read file");
+    let data = fs::read_to_string("./data/day1.txt").expect("Unable to read file");
 
     for line in data.lines() {
         let direction: &str = &line[0..1];
         let value: i32 = line[1..].parse().expect("Not a number!");
 
-        println!("Direction: {}, Value: {}, Current Dial: {}", direction, value, dial);
-        let (new_dial, turns) = get_new_dial_position(direction, dial, value);
+        println!("Current Dial: {} \nDirection: {}, Value: {}", dial, direction, value);
+        let (new_dial, zero_passes) = get_new_dial_position(direction, dial, value);
         dial = new_dial;
-        password += turns;
+        password += zero_passes;
 
-        println!("New Dial: {}, Turns: {}, Password: {}", dial, turns, password);
+        println!("New Dial: {}, Zero Passes: {}, Password: {}", dial, zero_passes, password);
+        println!("-------------------------");
     }
     println!("Final Dial Position: {}", dial);
     println!("Password: {}", password);
@@ -37,27 +38,16 @@ pub fn get_new_dial_position(direction: &str, current_position: i32, value: i32)
     let mut num_zeros_passed = 0;
     
     // calculate the number of times the dial has passed the 0 position
-    if direction == "L" && current_position - value < 0 {
-        println!("Calculating L direction zero passes");
+    if direction == "L" && current_position - value <= 0 {
         if current_position == 0 {
             num_zeros_passed = (value - current_position) / 100;
-            println!("Current Position is 0");
         } else {
             num_zeros_passed = (value - current_position) / 100 + 1;
-            println!("Current Position is not 0");
         }
 
-        if current_position - (value % 100) == 0 {
-            num_zeros_passed += 1;
-        }
     } else if direction == "R" && current_position + value >= 100 {
-        println!("Calculating R direction zero passes");
         num_zeros_passed = (current_position + value) / 100;
-        if (current_position + value) % 100 == 0 {
-            num_zeros_passed += 1;
-        }
     }
-    println!("Remainder Value: {}, Num Zeros Passed: {}", remainder_value, num_zeros_passed);
 
     if direction == "L" {
         if current_position - remainder_value < 0 {
